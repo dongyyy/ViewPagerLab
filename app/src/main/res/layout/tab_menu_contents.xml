@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/tabTopGabView"
+        android:layout_width="1dp"
+        android:layout_height="13dp" />
+
+    <TextView
+        android:id="@+id/tabTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:gravity="center_horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:includeFontPadding="false"
+        android:textColor="@color/button_text_color_text1_deepmint"
+        android:textSize="14dp"
+        android:textStyle="bold"
+        tools:text="디폴트" />
+</LinearLayout>
