@@ -1,21 +1,14 @@
 package com.example.viewpagerlab
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_pager_contents.*
-import kotlinx.android.synthetic.main.layout_pager_contents.view.*
-import kotlinx.android.synthetic.main.tab_menu_contents.*
 import kotlinx.android.synthetic.main.tab_menu_contents.view.*
-import java.security.AccessController.getContext
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,23 +16,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val list: ArrayList<String> = arrayListOf("상승", "하락", "배당", "조회급등", "인기검색", "시가총액")
+        var FIRST_ITEM_INDEX = 0
+        var LAST_ITEM_INDEX = list.size - 1
+        var FIRST_VISIBLE_ITEM_INDEX = 1
 
-        val firstItem = list[0]
-        val lastItem = list[list.size - 1]
-        list.add(0, lastItem)
+        val firstItem = list[FIRST_ITEM_INDEX]
+        val lastItem = list[LAST_ITEM_INDEX]
+        list.add(FIRST_ITEM_INDEX, lastItem)
         list.add(firstItem)
 
         viewPager.adapter = ViewPagerAdapter(list)
         viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPager.setCurrentItem(1, false)
+        viewPager.setCurrentItem(FIRST_VISIBLE_ITEM_INDEX, false)
 
         setTabLayout(list)
-        tabLayout.getTabAt(1)?.select()
-
-
+        tabLayout.getTabAt(FIRST_VISIBLE_ITEM_INDEX)?.select()
     }
 
     private fun setTabLayout(list: ArrayList<String>) {
+        var FIRST_VISIBLE_ITEM_INDEX = 1
+        var LAST_VISIBLE_ITEM_INDEX = list.size - 2
+        var FIRST_INVISIBLE_ITEM_INDEX = 0
+        var LAST_INVISIBLE_ITEM_INDEX = list.size - 1
 
         for ((index, item) in list.withIndex()) {
             val tabMenuLayout = LayoutInflater.from(baseContext)
@@ -49,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             currentTab.customView = tabMenuLayout
             tabLayout.addTab(currentTab)
 
-            if (index == 0 || index == list.size - 1){
+            if (index == FIRST_INVISIBLE_ITEM_INDEX || index == LAST_INVISIBLE_ITEM_INDEX){
                 tabMenuLayout.tabTopGabView.visibility = View.GONE
                 tabMenuLayout.tabTitleTextView.visibility = View.GONE
 
@@ -63,29 +61,33 @@ class MainActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                var tab: TabLayout.Tab? = when (position) {
-                    0 -> tabLayout.getTabAt(list.size - 2)
-                    list.size - 1 -> tabLayout.getTabAt(1)
-                    else -> tabLayout.getTabAt(position)
-                }
+                when (position) {
+                    FIRST_INVISIBLE_ITEM_INDEX -> {
+                        viewPager.setCurrentItem(LAST_VISIBLE_ITEM_INDEX, false)
+                        (tabLayout.getTabAt(LAST_VISIBLE_ITEM_INDEX) as TabLayout.Tab).select()
+                    }
+                    LAST_INVISIBLE_ITEM_INDEX -> {
+                        viewPager.setCurrentItem(FIRST_VISIBLE_ITEM_INDEX, false)
+                        (tabLayout.getTabAt(FIRST_VISIBLE_ITEM_INDEX)as TabLayout.Tab).select()
+                    }
+                    else -> {
+                        (tabLayout.getTabAt(position)as TabLayout.Tab).select()
+                    }
 
-                tab?.let { it.select() }
+                }
             }
         })
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.position?.let {
-                    viewPager.setCurrentItem(tab.position, true)
-//                    (tab.customView as LinearLayout)?.tabTitleTextView?.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.point_mint_00b7cf))
+                tab?.apply {
+                    position?.let { position ->
+                            viewPager.setCurrentItem(position, true)
+                    }
                 }
-
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                tab?.position?.let {
-//                    (tab.customView as LinearLayout)?.tabTitleTextView?.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.black))
-                }
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
