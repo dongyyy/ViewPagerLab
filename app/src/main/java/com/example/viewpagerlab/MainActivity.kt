@@ -1,10 +1,12 @@
 package com.example.viewpagerlab
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
@@ -47,20 +49,23 @@ class MainActivity : AppCompatActivity() {
             currentTab.customView = tabMenuLayout
             tabLayout.addTab(currentTab)
 
+            val customView = currentTab.customView as LinearLayout
+            val tabParent = customView.parent as LinearLayout
             if (index == FIRST_INVISIBLE_ITEM_INDEX || index == LAST_INVISIBLE_ITEM_INDEX){
                 tabMenuLayout.tabTopGabView.visibility = View.GONE
                 tabMenuLayout.tabTitleTextView.visibility = View.GONE
-
-                val customView = currentTab.customView as LinearLayout
-                val tabParent = customView.parent as LinearLayout
                 tabParent.setPadding(0, 0, 0, 0)
             }
         }
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            private val previousScrollState = 0
+            private val scrollState = 0
+
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
+                Log.d("dongy onPageSelected", position.toString())
                 when (position) {
                     FIRST_INVISIBLE_ITEM_INDEX -> {
                         viewPager.setCurrentItem(LAST_VISIBLE_ITEM_INDEX, false)
@@ -76,12 +81,29 @@ class MainActivity : AppCompatActivity() {
 
                 }
             }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                val tabLayout: TabLayout = tabLayout
+                if (tabLayout != null) {
+                    // Only update the text selection if we're not settling, or we are settling after
+                    // being dragged
+                    val updateText = scrollState != ViewPager.SCROLL_STATE_SETTLING || previousScrollState == ViewPager.SCROLL_STATE_DRAGGING
+                    // Update the indicator if we're not settling after being idle. This is caused
+                    // from a setCurrentItem() call and will be handled by an animation from
+                    // onPageSelected() instead.
+                    val updateIndicator = !(scrollState == ViewPager.SCROLL_STATE_SETTLING && previousScrollState == ViewPager.SCROLL_STATE_IDLE)
+                    tabLayout.setScrollPosition(position, positionOffset, updateText, updateIndicator)
+                }
+            }
         })
+
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
+
                 tab?.apply {
                     position?.let { position ->
+                            Log.d("dongy onTabSelected", tab!!.position.toString())
                             viewPager.setCurrentItem(position, true)
                     }
                 }
