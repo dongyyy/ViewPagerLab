@@ -10,13 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.layout_pager_contents.*
 
-class ViewPagerAdapter(var list: ArrayList<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ViewPagerAdapter(var context: Context, var list: ArrayList<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = list.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_pager_contents, parent, false)
-        return ViewHolder(view)
+        val itemView = MyTebView(context)
+        val layoutParam = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        itemView.layoutParams = layoutParam
+
+        return ViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

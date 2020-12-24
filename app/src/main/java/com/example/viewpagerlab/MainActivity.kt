@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         list.add(FIRST_ITEM_INDEX, lastItem)
         list.add(firstItem)
 
-        viewPager.adapter = ViewPagerAdapter(list)
+        viewPager.adapter = ViewPagerAdapter(applicationContext, list)
         viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         viewPager.setCurrentItem(FIRST_VISIBLE_ITEM_INDEX, false)
 
