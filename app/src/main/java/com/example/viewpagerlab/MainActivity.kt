@@ -13,6 +13,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.tab_menu_contents.view.*
 
 class MainActivity : AppCompatActivity() {
+    private val FIRST_VISIBLE_ITEM_INDEX = 1
+    private val FIRST_INVISIBLE_ITEM_INDEX = 0
+    private var LAST_VISIBLE_ITEM_INDEX = 0
+    private var LAST_INVISIBLE_ITEM_INDEX = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -20,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         val list: ArrayList<String> = arrayListOf("상승", "하락", "배당", "조회급등", "인기검색", "시가총액")
         var FIRST_ITEM_INDEX = 0
         var LAST_ITEM_INDEX = list.size - 1
-        var FIRST_VISIBLE_ITEM_INDEX = 1
 
         val firstItem = list[FIRST_ITEM_INDEX]
         val lastItem = list[LAST_ITEM_INDEX]
@@ -36,10 +40,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTabLayout(list: ArrayList<String>) {
-        var FIRST_VISIBLE_ITEM_INDEX = 1
-        var LAST_VISIBLE_ITEM_INDEX = list.size - 2
-        var FIRST_INVISIBLE_ITEM_INDEX = 0
-        var LAST_INVISIBLE_ITEM_INDEX = list.size - 1
+        viewPager.offscreenPageLimit = list.size - 3
+        LAST_VISIBLE_ITEM_INDEX = list.size - 2
+        LAST_INVISIBLE_ITEM_INDEX = list.size - 1
 
         for ((index, item) in list.withIndex()) {
             val tabMenuLayout = LayoutInflater.from(baseContext)
