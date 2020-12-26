@@ -3,7 +3,6 @@ package com.example.viewpagerlab
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
@@ -13,52 +12,30 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.tab_menu_contents.view.*
 
 class MainActivity : AppCompatActivity() {
-    private val FIRST_VISIBLE_ITEM_INDEX = 1
-    private val FIRST_INVISIBLE_ITEM_INDEX = 0
-    private var LAST_VISIBLE_ITEM_INDEX = 0
-    private var LAST_INVISIBLE_ITEM_INDEX = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val list: ArrayList<String> = arrayListOf("상승", "하락", "배당", "조회급등", "인기검색", "시가총액")
-        var FIRST_ITEM_INDEX = 0
-        var LAST_ITEM_INDEX = list.size - 1
-
-        val firstItem = list[FIRST_ITEM_INDEX]
-        val lastItem = list[LAST_ITEM_INDEX]
-        list.add(FIRST_ITEM_INDEX, lastItem)
-        list.add(firstItem)
 
         viewPager.adapter = ViewPagerAdapter(applicationContext, list)
         viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPager.setCurrentItem(FIRST_VISIBLE_ITEM_INDEX, false)
 
         setTabLayout(list)
-        tabLayout.getTabAt(FIRST_VISIBLE_ITEM_INDEX)?.select()
+
+        viewPager.setCurrentItem( 2000 / 2 - (2000 / 2 % list.size), false)
     }
 
     private fun setTabLayout(list: ArrayList<String>) {
-        viewPager.offscreenPageLimit = list.size - 3
-        LAST_VISIBLE_ITEM_INDEX = list.size - 2
-        LAST_INVISIBLE_ITEM_INDEX = list.size - 1
+        viewPager.offscreenPageLimit = list.size
 
-        for ((index, item) in list.withIndex()) {
+        for (item in list) {
             val tabMenuLayout = LayoutInflater.from(baseContext)
                 .inflate(R.layout.tab_menu_contents, null) as LinearLayout
             tabMenuLayout.tabTitleTextView.text = item
             val currentTab: TabLayout.Tab = tabLayout.newTab()
             currentTab.customView = tabMenuLayout
             tabLayout.addTab(currentTab)
-
-            val customView = currentTab.customView as LinearLayout
-            val tabParent = customView.parent as LinearLayout
-            if (index == FIRST_INVISIBLE_ITEM_INDEX || index == LAST_INVISIBLE_ITEM_INDEX){
-                tabMenuLayout.tabTopGabView.visibility = View.GONE
-                tabMenuLayout.tabTitleTextView.visibility = View.GONE
-                tabParent.setPadding(0, 0, 0, 0)
-            }
         }
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -69,20 +46,7 @@ class MainActivity : AppCompatActivity() {
                 super.onPageSelected(position)
 
                 Log.d("dongy onPageSelected", position.toString())
-                when (position) {
-                    FIRST_INVISIBLE_ITEM_INDEX -> {
-                        viewPager.setCurrentItem(LAST_VISIBLE_ITEM_INDEX, false)
-                        (tabLayout.getTabAt(LAST_VISIBLE_ITEM_INDEX) as TabLayout.Tab).select()
-                    }
-                    LAST_INVISIBLE_ITEM_INDEX -> {
-                        viewPager.setCurrentItem(FIRST_VISIBLE_ITEM_INDEX, false)
-                        (tabLayout.getTabAt(FIRST_VISIBLE_ITEM_INDEX)as TabLayout.Tab).select()
-                    }
-                    else -> {
-                        (tabLayout.getTabAt(position)as TabLayout.Tab).select()
-                    }
-
-                }
+                (tabLayout.getTabAt(position % list.size)as TabLayout.Tab).select()
             }
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -100,14 +64,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
 
                 tab?.apply {
                     position?.let { position ->
-                            Log.d("dongy onTabSelected", tab!!.position.toString())
-                            viewPager.setCurrentItem(position, true)
+                        Log.d("dongy onTabSelected", tab!!.position.toString())
+                        viewPager.setCurrentItem(2000 / 2 - (2000 / 2 % list.size) + position, false)
                     }
                 }
             }

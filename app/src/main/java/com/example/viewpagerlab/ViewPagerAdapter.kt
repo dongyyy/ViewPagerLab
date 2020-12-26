@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.layout_pager_contents.*
 
 class ViewPagerAdapter(var context: Context, var list: ArrayList<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = 2000
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = MyTebView(context)
@@ -23,12 +23,12 @@ class ViewPagerAdapter(var context: Context, var list: ArrayList<String>) : Recy
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as BaseViewHolder).initView(position)
+        (holder as BaseViewHolder).initView(position % list.size)
     }
 
     inner class ViewHolder(view : View) : BaseViewHolder(view){
         override fun initView(position: Int) {
-            textView.text = list[position]
+            textView.text = list[position % list.size]
         }
     }
 
